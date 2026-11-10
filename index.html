@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sana bir zarf var</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-top:#ECE6F7; --bg-bottom:#D5CBEA; --ink:#3B2A55; --soft:#6E5E8C;
+  --env:#F2AFC0; --env-flap:#E995AB; --env-back:#D9849B; --fold:rgba(90,20,50,.10);
+  --paper:#FFFDF7; --paper-ink:#3A2440; --paper-soft:#7A5F78; --rule:rgba(110,94,140,.18);
+  --seal:#B3123B; --seal-dark:#7E0B28;
+  --btn-bg:#B3123B; --btn-ink:#FFFFFF; --no-bg:#FFFFFF; --no-ink:#3A2440; --no-line:#D8C9E6;
+  --float:rgba(179,18,59,.22);
+  --shadow:rgba(59,42,85,.22);
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg-top:#17122A; --bg-bottom:#2C2348; --ink:#EEE7FA; --soft:#B6A8D6;
+    --env:#E59AAE; --env-flap:#D9849B; --env-back:#B8687E; --fold:rgba(60,10,30,.16);
+    --paper:#FBF6EE; --paper-ink:#3A2440; --paper-soft:#7A5F78; --rule:rgba(110,94,140,.2);
+    --seal:#C8173F; --seal-dark:#8A0D2C;
+    --btn-bg:#D81B4A; --btn-ink:#FFFFFF; --no-bg:#FFFFFF; --no-ink:#3A2440; --no-line:#D8C9E6;
+    --float:rgba(255,120,160,.28);
+    --shadow:rgba(0,0,0,.45);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg-top:#17122A; --bg-bottom:#2C2348; --ink:#EEE7FA; --soft:#B6A8D6;
+  --env:#E59AAE; --env-flap:#D9849B; --env-back:#B8687E; --fold:rgba(60,10,30,.16);
+  --paper:#FBF6EE; --paper-ink:#3A2440; --paper-soft:#7A5F78; --rule:rgba(110,94,140,.2);
+  --seal:#C8173F; --seal-dark:#8A0D2C;
+  --btn-bg:#D81B4A; --btn-ink:#FFFFFF; --no-bg:#FFFFFF; --no-ink:#3A2440; --no-line:#D8C9E6;
+  --float:rgba(255,120,160,.28);
+  --shadow:rgba(0,0,0,.45);
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%;background:var(--bg-top);scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0;height:100%;position:relative;overflow:hidden;
+  background:linear-gradient(180deg,var(--bg-top),var(--bg-bottom));
+  color:var(--ink);
+  font-family:'Quicksand','Segoe UI',system-ui,-apple-system,sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* arkada süzülen kalpler */
+.sky{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.drift{position:absolute;bottom:-40px;color:var(--float);animation:drift linear infinite}
+@keyframes drift{
+  from{transform:translate(0,0) rotate(-10deg)}
+  to{transform:translate(var(--x),-115vh) rotate(15deg)}
+}
+
+/* zarf sahnesi */
+.stage{
+  position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;transition:transform 1s cubic-bezier(.5,0,.3,1),opacity .8s ease;
+}
+.reading .stage{transform:translateY(40vh);opacity:0;pointer-events:none}
+.envelope{
+  all:unset;position:relative;display:block;cursor:pointer;
+  width:min(86vw,340px);aspect-ratio:3/2;perspective:900px;
+  filter:drop-shadow(0 14px 22px var(--shadow));
+  animation:float 3.6s ease-in-out infinite;
+}
+.envelope:focus-visible{outline:3px solid var(--ink);outline-offset:8px;border-radius:12px}
+.opening .envelope{animation:none;cursor:default}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-7px) rotate(1deg)}}
+.env-back{position:absolute;inset:0;background:var(--env-back);border-radius:10px}
+.env-letter{
+  position:absolute;left:6%;right:6%;top:7%;height:86%;z-index:2;
+  background:var(--paper);border-radius:6px;padding:14px 18px;
+  background-image:repeating-linear-gradient(180deg,transparent 0 17px,var(--rule) 17px 18px);
+  background-position:0 30px;
+  transition:transform 1s cubic-bezier(.3,.8,.3,1);
+}
+.env-letter span{font-family:'Caveat','Segoe Script','Bradley Hand',cursive;font-size:1.4rem;color:var(--paper-ink)}
+.letter-out .env-letter{transform:translateY(-58%)}
+.env-front{
+  position:absolute;inset:0;z-index:3;border-radius:10px;
+  clip-path:polygon(0 0,50% 56%,100% 0,100% 100%,0 100%);
+  background:
+    linear-gradient(to top right,transparent 49.6%,var(--fold) 50%,transparent 50.4%),
+    linear-gradient(to top left,transparent 49.6%,var(--fold) 50%,transparent 50.4%),
+    var(--env);
+}
+.env-front b{
+  position:absolute;left:0;right:0;bottom:11%;text-align:center;
+  font-family:'Caveat','Segoe Script','Bradley Hand',cursive;font-weight:700;
+  font-size:clamp(1.9rem,8.5vw,2.5rem);color:var(--seal-dark);line-height:1;
+}
+.stamp{
+  position:absolute;right:6%;bottom:9%;width:13%;aspect-ratio:5/6;
+  background:#FFF8F0;border:2px dashed #E7B9C6;border-radius:3px;
+  display:flex;align-items:center;justify-content:center;font-size:clamp(.9rem,4vw,1.2rem);
+  transform:rotate(6deg);
+}
+.flap{
+  position:absolute;left:0;right:0;top:0;height:60%;z-index:4;
+  transform-origin:50% 0;transition:transform .7s cubic-bezier(.4,.1,.3,1);
+}
+.flap::before{
+  content:"";position:absolute;inset:0;background:var(--env-flap);
+  clip-path:polygon(0 0,100% 0,50% 100%);border-radius:10px 10px 0 0;
+}
+.open .flap{transform:rotateX(180deg)}
+.flap-back .flap{z-index:1}
+.seal{position:absolute;left:50%;top:60%;z-index:5;width:56px;height:56px;margin:-28px 0 0 -28px;pointer-events:none}
+.seal i{
+  position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#E0456A,var(--seal) 55%,var(--seal-dark));
+  box-shadow:0 2px 5px rgba(0,0,0,.25);
+  display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.75);font-style:normal;font-size:1.4rem;
+  transition:transform .6s cubic-bezier(.4,0,.6,1),opacity .6s ease;
+}
+.seal i:first-child{clip-path:polygon(0 0,52% 0,44% 35%,56% 60%,46% 100%,0 100%)}
+.seal i:last-child{clip-path:polygon(52% 0,100% 0,100% 100%,46% 100%,56% 60%,44% 35%)}
+.crack .seal i:first-child{transform:translate(-26px,22px) rotate(-35deg);opacity:0}
+.crack .seal i:last-child{transform:translate(26px,22px) rotate(35deg);opacity:0}
+.tap-hint{margin:34px 0 0;color:var(--soft);font-size:1rem;transition:opacity .4s ease}
+.opening .tap-hint{opacity:0}
+
+/* mektup */
+.read{
+  position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;padding:20px;
+  opacity:0;pointer-events:none;transition:opacity .8s ease;
+}
+.reading .read{opacity:1;pointer-events:auto}
+.paper{
+  width:min(92vw,430px);max-height:100%;overflow-y:auto;
+  background:var(--paper);color:var(--paper-ink);border-radius:8px;
+  padding:24px 24px 28px;box-shadow:0 18px 40px var(--shadow);
+  background-image:repeating-linear-gradient(180deg,transparent 0 33px,var(--rule) 33px 34px);
+  background-position:0 23px;background-attachment:local;
+  transform:translateY(30px) scale(.94);transition:transform 1s cubic-bezier(.2,.8,.3,1);
+}
+.reading .paper{transform:none}
+.paper p{
+  font-family:'Caveat','Segoe Script','Bradley Hand',cursive;font-weight:500;
+  font-size:1.5rem;line-height:34px;margin:0 0 34px;
+  opacity:0;transform:translateY(6px);transition:opacity .9s ease,transform .9s ease;
+}
+.paper p.show{opacity:1;transform:none}
+.paper .to{font-weight:700;font-size:1.8rem;margin-bottom:0}
+.paper .sign{text-align:right;font-weight:700;margin-bottom:0}
+
+/* küçük oyun */
+.game{margin-top:26px;text-align:center;opacity:0;transition:opacity .8s ease}
+.game.show{opacity:1}
+.game h3{font-family:'Caveat','Segoe Script','Bradley Hand',cursive;font-weight:700;font-size:2rem;margin:0;line-height:1.1}
+.game .hint{min-height:1.4em;margin:6px 0 0;color:var(--paper-soft);font-size:.95rem}
+.buttons{display:flex;gap:14px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:18px;min-height:64px}
+.btn{
+  font:700 1.05rem/1 'Quicksand','Segoe UI',system-ui,sans-serif;
+  border:none;border-radius:999px;padding:14px 24px;cursor:pointer;touch-action:manipulation;white-space:nowrap;
+}
+.btn:focus-visible{outline:3px solid var(--paper-ink);outline-offset:3px}
+#yes{background:var(--btn-bg);color:var(--btn-ink);box-shadow:0 8px 20px rgba(179,18,59,.3);
+  transition:font-size .3s cubic-bezier(.3,1.6,.5,1),padding .3s ease}
+#no{background:var(--no-bg);color:var(--no-ink);border:2px solid var(--no-line);z-index:20;
+  transition:left .22s ease,top .22s ease}
+.final{
+  font-family:'Caveat','Segoe Script','Bradley Hand',cursive;font-weight:700;font-size:1.7rem;line-height:1.25;
+  margin:16px 0 0;opacity:0;transform:translateY(6px);transition:opacity .9s ease,transform .9s ease;
+}
+.final.show{opacity:1;transform:none}
+
+.heart{position:fixed;pointer-events:none;font-size:1.7rem;z-index:30;
+  transform:translate(-50%,-50%);animation:rise 1.5s ease-out forwards}
+@keyframes rise{to{transform:translate(calc(-50% + var(--dx,0px)),calc(-50% - 140px)) scale(1.3);opacity:0}}
+
+@media (prefers-reduced-motion: reduce){
+  .envelope,.drift{animation:none}
+  .drift{display:none}
+  .stage,.flap,.env-letter,.seal i,.paper,.paper p,.final{transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<div class="sky" id="sky" aria-hidden="true"></div>
+
+<section class="stage">
+  <button class="envelope" id="env" type="button" aria-label="Zarfı aç">
+    <span class="env-back"></span>
+    <span class="env-letter"></span>
+    <span class="env-front"><b>Ela gözlüme</b><span class="stamp">💗</span></span>
+    <span class="flap"></span>
+    <span class="seal" aria-hidden="true"><i>♥</i><i>♥</i></span>
+  </button>
+  <p class="tap-hint">Zarfa dokun ve aç</p>
+</section>
+
+<section class="read" aria-live="polite">
+  <div class="paper">
+    <p class="to">Ela gözlüm,</p>
+    <p>Biliyorum, tatil planım keyfini kaçırdı. Zaten aramızda bunca yol varken bir de bunu duymak canını sıktı. Farkındayım ve üzgünüm.</p>
+    <p>Aradaki kilometreleri aşıp yanına gelemiyorum ama en azından yüzünü güldürebilmek için bu küçük zarfı hazırladım.</p>
+    <p>Bir de şunu bil: O ela gözler gülünce benim bütün günüm güzelleşiyor. Onları üzgün görmeye hiç dayanamıyorum.</p>
+    <p>Şimdi bir gülümse bakalım 🙂</p>
+    <p class="sign">Sevgiyle 💌</p>
+
+    <div class="game" id="game">
+      <h3>Peki, yüzünü biraz güldürebildim mi?</h3>
+      <p class="hint" id="hint"></p>
+      <div class="buttons">
+        <button class="btn" id="yes" type="button">Evet</button>
+        <button class="btn" id="no" type="button">Hayır</button>
+      </div>
+      <p class="final" id="final">Biliyordum 💗 Şimdi o güzel gülüşünle bana bir mesaj at.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var body = document.body;
+  function later(fn, ms){ setTimeout(fn, reduce ? 0 : ms); }
+
+  /* arkadaki kalpler */
+  if (!reduce){
+    var sky = document.getElementById('sky');
+    for (var i=0;i<14;i++){
+      var h = document.createElement('span');
+      h.className = 'drift';
+      h.textContent = '♥';
+      h.style.left = (Math.random()*100) + 'vw';
+      h.style.fontSize = (14 + Math.random()*22) + 'px';
+      h.style.setProperty('--x', (Math.random()*80 - 40) + 'px');
+      h.style.animationDuration = (12 + Math.random()*10) + 's';
+      h.style.animationDelay = (-Math.random()*20) + 's';
+      sky.appendChild(h);
+    }
+  }
+
+  /* zarfı açma */
+  var env = document.getElementById('env');
+  var opened = false;
+  env.addEventListener('click', function(){
+    if (opened) return;
+    opened = true;
+    body.classList.add('opening','crack');
+    later(function(){ body.classList.add('open'); }, 450);
+    later(function(){ body.classList.add('flap-back'); }, 800);
+    later(function(){ body.classList.add('letter-out'); }, 1150);
+    later(function(){
+      body.classList.add('reading');
+      var lines = document.querySelectorAll('.paper > p');
+      lines.forEach(function(p, i){
+        later(function(){ p.classList.add('show'); }, 600 + i*1000);
+      });
+      later(function(){
+        var game = document.getElementById('game');
+        game.classList.add('show');
+        game.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block: 'end'});
+      }, 600 + lines.length*1000 + 400);
+    }, 2300);
+  });
+
+  /* kalp patlaması */
+  var emojis = ['💗','💖','😊','💕','🌸'];
+  function heart(x, y, dx){
+    var s = document.createElement('span');
+    s.className = 'heart';
+    s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    s.style.setProperty('--dx', dx + 'px');
+    body.appendChild(s);
+    s.addEventListener('animationend', function(){ s.remove(); });
+  }
+
+  /* kaçan "küsüm" butonu */
+  var yes = document.getElementById('yes');
+  var no = document.getElementById('no');
+  var hint = document.getElementById('hint');
+  var labels = ['Hayır','Emin misin?','Gerçekten mi?','Bir daha düşün','Yanlış butona basıyorsun','Bu buton çalışmıyor','Israr etme 😄','Hâlâ mı?','Yakalayamazsın 😄','Boşuna uğraşma 😌'];
+  var hints = ['','Hmm, o buton biraz utangaç.','Bence diğerine bas 🙂','Evet butonu büyüyor, fark ettin mi?','O buton kaçmaya devam edecek, söyleyeyim.','Ben olsam pes ederdim 😌','O ela gözler yalan söylemez 😌','Cevabı ikimiz de biliyoruz aslında.','Hadi ama 🥺','Evet butonu artık kocaman oldu 😄'];
+  var tries = 0, lastDodge = 0, done = false;
+
+  function overlaps(x,y,w,h,r){
+    var m = 24;
+    return !(x+w < r.left-m || x > r.right+m || y+h < r.top-m || y > r.bottom+m);
+  }
+  function move(){
+    var r = no.getBoundingClientRect();
+    var yr = yes.getBoundingClientRect();
+    var W = window.innerWidth, H = window.innerHeight, pad = 16;
+    var cx = r.left + r.width/2, cy = r.top + r.height/2;
+    if (no.parentNode !== body){
+      no.style.position = 'fixed';
+      no.style.left = r.left + 'px';
+      no.style.top = r.top + 'px';
+      body.appendChild(no);
+      no.getBoundingClientRect();
+    }
+    var x, y, k = 0;
+    do {
+      x = pad + Math.random()*Math.max(1, W - r.width - pad*2);
+      y = pad + 50 + Math.random()*Math.max(1, H - r.height - pad*2 - 100);
+      k++;
+    } while (k < 40 && (overlaps(x,y,r.width,r.height,yr) || Math.hypot(x + r.width/2 - cx, y + r.height/2 - cy) < 130));
+    no.style.left = x + 'px';
+    no.style.top = y + 'px';
+  }
+  function dodge(e){
+    if (done) return;
+    if (e && e.cancelable) e.preventDefault();
+    lastDodge = Date.now();
+    tries++;
+    yes.style.fontSize = Math.min(1.05 + tries*0.14, 3.2) + 'rem';
+    yes.style.padding = Math.min(14 + tries*2, 30) + 'px ' + Math.min(24 + tries*3, 46) + 'px';
+    var i = tries < labels.length ? tries : 1 + ((tries - 1) % (labels.length - 1));
+    no.textContent = labels[i];
+    hint.textContent = hints[i] || '';
+    move();
+  }
+  no.addEventListener('pointerenter', function(e){ if (e.pointerType === 'mouse') dodge(e); });
+  no.addEventListener('pointerdown', function(e){ dodge(e); });
+  no.addEventListener('click', function(e){
+    e.preventDefault();
+    if (Date.now() - lastDodge < 600) return;
+    dodge();
+  });
+  yes.addEventListener('click', function(){ makeUp(yes); });
+
+  function makeUp(btn){
+    if (done) return;
+    done = true;
+    var r = btn.getBoundingClientRect();
+    var x = r.left + r.width/2, y = r.top + r.height/2;
+    for (var i=0;i<18;i++) heart(x, y, (i-9)*16 + (Math.random()*10-5));
+    no.style.visibility = 'hidden';
+    yes.textContent = 'Evet 💗';
+    hint.textContent = '';
+    var fin = document.getElementById('final');
+    later(function(){
+      fin.classList.add('show');
+      fin.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block: 'end'});
+    }, 500);
+  }
+})();
+</script>
+</body>
+</html>
